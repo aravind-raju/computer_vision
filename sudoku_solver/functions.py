@@ -1,5 +1,12 @@
 import cv2
+import torch
 import numpy as np
+
+from digit_recognizer import CNNModel
+
+PATH = "D:/projects/computer_vision/sudoku_solver/model/digit_recognizer.pth"
+model = CNNModel()
+model.load_state_dict(torch.load(PATH))
 
 def perspective_transform(image, corners):
 
@@ -153,3 +160,26 @@ def splitBoxes(img):
         for box in cols:
             boxes.append(box)
     return boxes
+
+
+def getPredection(boxes):
+    result = []
+    for image in boxes:
+        ## PREPARE IMAGE
+        img = np.asarray(image)
+        #img = img[4:img.shape[0] - 4, 4:img.shape[1] - 4]
+        img = cv2.resize(img, (28, 28))
+        #img = img / 255
+        img = img.reshape(1, 1, 28, 28)
+        test = torch.from_numpy(img)
+        ## GET PREDICTION
+        predictions = model(test.float())
+        predictions = predictions.detach().numpy()
+        predicted_class = np.argmax(predictions)
+        probabilityValue = np.amax(predictions)
+        ## SAVE TO RESULT
+        if probabilityValue > 0.8:
+            result.append(predicted_class)
+        else:
+            result.append(0)
+    return result

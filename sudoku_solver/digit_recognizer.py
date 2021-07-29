@@ -67,9 +67,9 @@ class CNNModel(pl.LightningModule):
         return DataLoader(mnist_val, batch_size=batch_sz, num_workers=4)
 
 
-model = CNNModel()
-trainer = pl.Trainer(gpus=1, max_epochs=10)
-trainer.fit(model)
+#model = CNNModel()
+#trainer = pl.Trainer(gpus=1, max_epochs=10)
+#trainer.fit(model)
 
-PATH = "D:/projects/computer_vision/sudoku_solver/model/digit_recognizer.pth"
-torch.save(model.state_dict(), PATH)
+#PATH = "D:/projects/computer_vision/sudoku_solver/model/digit_recognizer.pth"
+#torch.save(model.state_dict(), PATH)

@@ -21,7 +21,7 @@ if biggest.size != 0:
     cv2.drawContours(imgBigContour, biggest, -1, (0, 0, 255), 10)  # DRAW THE BIGGEST CONTOUR
     boxContour = imgBigContour.copy()
     x, y, w, h = cv2.boundingRect(biggest)
-    cv2.rectangle(boxContour, (x, y), (x + w, y + h), (200, 0, 0), 2)
+    #cv2.rectangle(boxContour, (x, y), (x + w, y + h), (200, 0, 0), 2)
     pts1 = np.float32(biggest) # PREPARE POINTS FOR WARP
     pts2 = np.float32([[0, 0],[widthImg, 0], [0, heightImg],[widthImg, heightImg]]) # PREPARE POINTS FOR WARP
     matrix = cv2.getPerspectiveTransform(pts1, pts2) # GER
@@ -34,12 +34,13 @@ if biggest.size != 0:
     print(imgWarpColored.shape)
     print(boxes[0].shape)
     #cv2.imshow("Sample", boxes[1])
-    #numbers = getPredection(boxes, model)
-    #print(numbers)
+    numbers = getPredection(boxes)
+    print(numbers)
     #imgDetectedDigits = displayNumbers(imgDetectedDigits, numbers, color=(255, 0, 255))
     #numbers = np.asarray(numbers)
     #posArray = np.where(numbers > 0, 0, 1)
     #print(posArray)
 
-cv2.imshow('transformed', boxContour)
+cv2.imshow('transformed', imgBigContour)
+cv2.imwrite('cell.png', boxes[0])
 cv2.waitKey()
