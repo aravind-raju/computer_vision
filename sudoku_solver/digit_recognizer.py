@@ -23,6 +23,7 @@ class CNNModel(pl.LightningModule):
         self.cnn2 = nn.Conv2d(in_channels=16, out_channels=32, kernel_size=5, stride=1, padding=0)
         self.maxpool2 = nn.MaxPool2d(kernel_size=2)
         self.fc1 = nn.Linear(32 * 4 * 4, 10)
+        self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x):
         batch_size, channels, width, height = x.size()
@@ -33,23 +34,39 @@ class CNNModel(pl.LightningModule):
         x = F.relu(x)
         x = self.maxpool2(x)
         x = x.view(batch_size, -1)
-        out = self.fc1(x)
+        x = self.fc1(x)
+        out = self.softmax(x)
         return out
 
     def training_step(self, batch, batch_idx):
         x, y = batch
         y_hat = self(x)
-        loss = F.cross_entropy(y_hat, y)
-        tensorboard_logs = {'train_loss': loss}
-        return {'loss': loss, 'log': tensorboard_logs}
+        loss = loss_fn(y_hat, y)
+        correct = (y == y_hat.argmax(axis=1)).sum()
+        logs = {'train_loss': loss}
+        return {'loss': loss, 'log': logs, 'correct': correct, 'total': len(y)}
 
     def validation_step(self, batch, batch_idx):
         x, y = batch
         y_hat = self.forward(x)
-        loss = F.cross_entropy(y_hat, y)
-        #self.log('val_loss', loss)
-        tensorboard_logs = {'val_loss': loss}
-        return {'loss': loss, 'log': tensorboard_logs}
+        loss = loss_fn(y_hat, y)
+        correct = (y == y_hat.argmax(axis=1)).sum()
+        logs = {'val_loss': loss}
+        return {'loss': loss, 'log': logs, 'correct': correct, 'total': len(y)}
+    
+    def training_epoch_end(self, outputs):
+        avg_loss = torch.stack([x['loss'] for x in outputs]).mean()
+        correct = sum([x["correct"] for  x in outputs])
+        total = sum([x["total"] for  x in outputs])
+        self.log("train_loss", avg_loss, prog_bar=True, logger=True)
+        self.log("train_acc", correct/total, prog_bar=True, logger=True)
+    
+    def validation_epoch_end(self, outputs):
+        avg_loss = torch.stack([x['loss'] for x in outputs]).mean()
+        correct = sum([x["correct"] for  x in outputs])
+        total = sum([x["total"] for  x in outputs])
+        self.log("val_loss", avg_loss, prog_bar=True, logger=True)
+        self.log("val_acc", correct/total, prog_bar=True, logger=True)
 
     def configure_optimizers(self):
         return torch.optim.Adam(self.parameters(), lr=0.001)
@@ -65,11 +82,3 @@ class CNNModel(pl.LightningModule):
     def val_dataloader(self):
         mnist_val = MNIST(os.getcwd(), train=False, download=False, transform=transforms.ToTensor())
         return DataLoader(mnist_val, batch_size=batch_sz, num_workers=4)
-
-
-#model = CNNModel()
-#trainer = pl.Trainer(gpus=1, max_epochs=10)
-#trainer.fit(model)
-
-#PATH = "D:/projects/computer_vision/sudoku_solver/model/digit_recognizer.pth"
-#torch.save(model.state_dict(), PATH)

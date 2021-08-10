@@ -49,3 +49,7 @@ Thumbs.db
 *.wmv
 
 MNIST
+logs
+digits
+.ipynb_checkpoints
+__pycache__

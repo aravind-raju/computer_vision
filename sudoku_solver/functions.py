@@ -151,12 +151,10 @@ def reorder(myPoints):
 def splitBoxes(img):
     rows = np.vsplit(img, 9)
     test = np.array(rows)
-    print(test.shape)
     boxes = []
     for r in rows:
         cols = np.hsplit(r, 9)
         test = np.array(cols)
-        print(test.shape)
         for box in cols:
             boxes.append(box)
     return boxes
@@ -173,13 +171,16 @@ def getPredection(boxes):
         img = img.reshape(1, 1, 28, 28)
         test = torch.from_numpy(img)
         ## GET PREDICTION
-        predictions = model(test.float())
-        predictions = predictions.detach().numpy()
-        predicted_class = np.argmax(predictions)
-        probabilityValue = np.amax(predictions)
-        ## SAVE TO RESULT
-        if probabilityValue > 0.8:
-            result.append(predicted_class)
-        else:
+        if (img != img.min()).sum() < 75:
             result.append(0)
+        else:
+            predictions = model(test.float())
+            predictions = predictions.detach().numpy()
+            predicted_class = np.argmax(predictions)
+            probabilityValue = np.amax(predictions)
+            ## SAVE TO RESULT
+            if probabilityValue > 0.8:
+                result.append(predicted_class)
+            else:
+                result.append(0)
     return result
