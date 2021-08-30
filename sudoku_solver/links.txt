@@ -1,0 +1,9 @@
+https://stackoverflow.com/questions/1697334/algorithm-for-solving-sudoku/35500280#
+https://www.geeksforgeeks.org/sudoku-backtracking-7/
+https://github.com/murtazahassan/OpenCV-Sudoku-Solver
+https://learnopencv.com/tensorboard-with-pytorch-lightning/
+https://www.kaggle.com/jerifate/digit-recognizer-pytorch-baseline-for-starter#6.-Submission
+https://pytorch-lightning.readthedocs.io/en/stable/extensions/logging.html
+https://towardsdatascience.com/ruining-sudoku-a-data-science-project-part-3-digits-recognition-and-sudoku-solver-5271e6acd81f
+https://github.com/matteobarbieri/sudoku/blob/master/train_classifier.py
+https://discuss.pytorch.org/t/loading-a-specific-layer-from-checkpoint/52725
